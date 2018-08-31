@@ -45,8 +45,16 @@ def net_preloaded(weights, input_image, pooling):
         elif kind == 'pool':
             current = _pool_layer(current, pooling)
         net[name] = current
+    relu5_4_to_flat = tf.reshape(current, [-1, size(current)])
+    dense = tf.layers.dense(inputs=relu5_42_flat, units=256, activation=tf.nn.relu, trainable=True)
+    net['fc'] = dense
+    logit = tf.layers.dense(inputs=dense, units=100, acitvation=tf.nn.softmax, trainable=True)
+    net['logit'] = logit
 
-    assert len(net) == len(VGG19_LAYERS)
+  # dropout = tf.layers.dropout(
+  #     inputs=dense, rate=0.4, training=mode == learn.ModeKeys.TRAIN)
+
+    assert len(net) == len(VGG19_LAYERS)+2
     return net
 
 def _conv_layer(input, weights, bias):
